@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
-import { ChevronDown, Copy, Check, Share2, BookOpen } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import { MentalModel } from '@/types';
+import { useState, useEffect, useRef } from "react";
+import { ChevronDown, Copy, Check, Share2, BookOpen } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { MentalModel } from "@/types";
 
 interface ModelCardProps {
   model: MentalModel;
@@ -13,9 +13,14 @@ interface ModelCardProps {
   modelIndex: number;
 }
 
-const LAST_READ_KEY = 'mindsnack_last_read';
+const LAST_READ_KEY = "mindsnack_last_read";
 
-export default function ModelCard({ model, cardId, categoryIndex, modelIndex }: ModelCardProps) {
+export default function ModelCard({
+  model,
+  cardId,
+  categoryIndex,
+  modelIndex,
+}: ModelCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
   const [isRead, setIsRead] = useState(false);
@@ -23,35 +28,39 @@ export default function ModelCard({ model, cardId, categoryIndex, modelIndex }: 
   const contentRef = useRef<HTMLDivElement>(null);
 
   // Handle both data structures: properties object or flat structure
-  const title = model.properties?.title || model.title || '';
-  const content = model.properties?.content || model.content || '';
-  const tldr = model.properties?.tldr || model.tldr || '';
+  const title = model.properties?.title || model.title || "";
+  const content = model.properties?.content || model.content || "";
+  const tldr = model.properties?.tldr || model.tldr || "";
   const tags = model.properties?.tags || model.tags || [];
 
   // Get preview text (first 150 characters)
   const getPreviewText = (text: string) => {
-    const plainText = text.replace(/\*\*/g, '').replace(/\n/g, ' ');
-    return plainText.length > 150 ? plainText.substring(0, 150) + '...' : plainText;
+    const plainText = text.replace(/\*\*/g, "").replace(/\n/g, " ");
+    return plainText.length > 150
+      ? plainText.substring(0, 150) + "..."
+      : plainText;
   };
   const previewText = getPreviewText(content);
 
   // Check if this is the last read card on mount and if it's been read
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const lastRead = localStorage.getItem(LAST_READ_KEY);
       if (lastRead === cardId) {
         setIsExpanded(true);
         setIsRead(true);
         // Scroll to this card after a short delay to ensure it's rendered
         setTimeout(() => {
-          cardRef.current?.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'center' 
+          cardRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
           });
         }, 100);
       } else {
         // Check if this card has been read before
-        const readCards = JSON.parse(localStorage.getItem('mindsnack_read_cards') || '[]');
+        const readCards = JSON.parse(
+          localStorage.getItem("mindsnack_read_cards") || "[]"
+        );
         setIsRead(readCards.includes(cardId));
       }
     }
@@ -59,19 +68,21 @@ export default function ModelCard({ model, cardId, categoryIndex, modelIndex }: 
 
   const handleExpand = () => {
     setIsExpanded(true);
-    
+
     // Save to localStorage when expanded
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       localStorage.setItem(LAST_READ_KEY, cardId);
-      
+
       // Mark as read
-      const readCards = JSON.parse(localStorage.getItem('mindsnack_read_cards') || '[]');
+      const readCards = JSON.parse(
+        localStorage.getItem("mindsnack_read_cards") || "[]"
+      );
       if (!readCards.includes(cardId)) {
         readCards.push(cardId);
-        localStorage.setItem('mindsnack_read_cards', JSON.stringify(readCards));
+        localStorage.setItem("mindsnack_read_cards", JSON.stringify(readCards));
         setIsRead(true);
         // Trigger a custom event to update progress
-        window.dispatchEvent(new Event('mindsnack_read_update'));
+        window.dispatchEvent(new Event("mindsnack_read_update"));
       }
     }
   };
@@ -83,7 +94,7 @@ export default function ModelCard({ model, cardId, categoryIndex, modelIndex }: 
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      console.error("Failed to copy:", err);
     }
   };
 
@@ -91,7 +102,7 @@ export default function ModelCard({ model, cardId, categoryIndex, modelIndex }: 
     const shareData = {
       title: title,
       text: `${tldr}`,
-      url: window.location.href + `#${cardId}`
+      url: window.location.href + `#${cardId}`,
     };
 
     try {
@@ -105,18 +116,19 @@ export default function ModelCard({ model, cardId, categoryIndex, modelIndex }: 
       }
     } catch (err) {
       // User cancelled or error
-      console.error('Share failed:', err);
+      console.error("Share failed:", err);
     }
   };
 
-
   return (
-    <div 
+    <div
       ref={cardRef}
       id={cardId}
       className={`bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border-2 ${
-        isRead ? 'border-indigo-200 bg-gradient-to-br from-white to-indigo-50/30' : 'border-transparent'
-      } ${isExpanded ? 'ring-2 ring-indigo-200' : ''}`}
+        isRead
+          ? "border-indigo-200 bg-gradient-to-br from-white to-indigo-50/30"
+          : "border-transparent"
+      } ${isExpanded ? "ring-2 ring-indigo-200" : ""}`}
     >
       <div className="p-4 sm:p-5">
         {/* Header Section */}
@@ -152,8 +164,10 @@ export default function ModelCard({ model, cardId, categoryIndex, modelIndex }: 
 
         {/* TL;DR Badge */}
         <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-l-4 border-amber-400 p-3 sm:p-4 mb-3 sm:mb-4 rounded-r shadow-sm">
-          <p className="text-xs sm:text-sm font-semibold text-amber-900 mb-1">TL;DR</p>
-          <p className="text-xs sm:text-sm text-amber-800 leading-relaxed">
+          <p className="text-xs sm:text-sm font-semibold text-amber-900 mb-1">
+            TL;DR
+          </p>
+          <p className="text-xs sm:text-sm text-amber-800 leading-loose">
             {tldr}
           </p>
         </div>
@@ -161,7 +175,7 @@ export default function ModelCard({ model, cardId, categoryIndex, modelIndex }: 
         {/* Preview Content with Fade */}
         {!isExpanded && (
           <div className="relative mb-3 sm:mb-4">
-            <div className="text-sm text-gray-600 leading-relaxed line-clamp-3">
+            <div className="text-sm text-gray-600 leading-loose line-clamp-3">
               {previewText}
             </div>
             <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent pointer-events-none" />
@@ -169,16 +183,16 @@ export default function ModelCard({ model, cardId, categoryIndex, modelIndex }: 
         )}
 
         {/* Expandable Content */}
-        <div 
+        <div
           className={`overflow-hidden transition-all duration-500 ease-in-out ${
-            isExpanded ? 'max-h-[5000px] opacity-100' : 'max-h-0 opacity-0'
+            isExpanded ? "max-h-[5000px] opacity-100" : "max-h-0 opacity-0"
           }`}
         >
-          <div 
+          <div
             ref={contentRef}
             className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200"
           >
-            <div className="prose prose-sm max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-700 prose-p:leading-relaxed prose-strong:text-gray-900 prose-strong:font-semibold prose-ul:list-disc prose-ul:pl-4 sm:prose-ul:pl-6 prose-ol:list-decimal prose-ol:pl-4 sm:prose-ol:pl-6 prose-li:text-gray-700 prose-a:text-indigo-600 prose-a:no-underline hover:prose-a:underline prose-code:text-indigo-700 prose-code:bg-indigo-50 prose-code:px-1 prose-code:rounded prose-pre:bg-gray-100 prose-pre:text-gray-800">
+            <div className="prose prose-sm max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-headings:mb-4 prose-headings:mt-6 prose-p:text-gray-700 prose-p:leading-loose prose-p:mb-6 prose-strong:text-gray-900 prose-strong:font-semibold prose-ul:list-disc prose-ul:pl-4 sm:prose-ul:pl-6 prose-ul:mb-6 prose-ol:list-decimal prose-ol:pl-4 sm:prose-ol:pl-6 prose-ol:mb-6 prose-li:text-gray-700 prose-li:leading-loose prose-li:mb-2 prose-a:text-indigo-600 prose-a:no-underline hover:prose-a:underline prose-code:text-indigo-700 prose-code:bg-indigo-50 prose-code:px-1 prose-code:rounded prose-pre:bg-gray-100 prose-pre:text-gray-800 prose-pre:mb-6">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {content}
               </ReactMarkdown>
@@ -232,4 +246,3 @@ export default function ModelCard({ model, cardId, categoryIndex, modelIndex }: 
     </div>
   );
 }
-

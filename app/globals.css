@@ -24,3 +24,31 @@ body {
   display: none;
 }
 
+/* Custom spacing for prose paragraphs */
+.prose p {
+  margin-bottom: 1rem !important;
+}
+
+.prose p:last-child {
+  margin-bottom: 0 !important;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  margin-top: 2rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.prose h1:first-child,
+.prose h2:first-child,
+.prose h3:first-child,
+.prose h4:first-child,
+.prose h5:first-child,
+.prose h6:first-child {
+  margin-top: 0 !important;
+}
+
