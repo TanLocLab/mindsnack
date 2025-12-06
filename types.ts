@@ -16,3 +16,8 @@ export interface MentalModel {
   required?: string[];
 }
 
+export interface CategoryData {
+  category: string;
+  data: MentalModel[];
+}
+
